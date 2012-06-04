@@ -6,14 +6,15 @@ I did this project because sometimes I've been questioned about which one is the
 
 I used the following libraries:
 
-* [SBJson](http://stig.github.com/json-framework) - *Previously known as json-framework*
-* [JSONKit](https://github.com/johnezang/JSONKit)
-* [NextiveJSON](https://github.com/nextive/NextiveJson)
-* [TouchJSON](https://github.com/TouchCode/TouchJSON)
+* [SBJson](http://stig.github.com/json-framework) - *Previously known as json-framework* (latest version, 3.1)
+* [JSONKit](https://github.com/johnezang/JSONKit) (latest version, 2.0)
+* [NextiveJSON](https://github.com/nextive/NextiveJson) (latest version)
+* [TouchJSON](https://github.com/TouchCode/TouchJSON) (latest version)
 * [NSJSONSerialization](http://developer.apple.com/library/ios/#documentation/Foundation/Reference/NSJSONSerialization_Class/Reference/Reference.html) - *Public API since iOS5*
 
 
 I also created a [post in my blog about it](http://www.bonto.ch/blog/2011/12/08/json-libraries-for-ios-comparison-updated/). Please feel free to add comments, suggestion and criticism to help me improving this basic project.
+
 
 Latest Results
 ====================
