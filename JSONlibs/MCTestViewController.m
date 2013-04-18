@@ -11,6 +11,7 @@
 #import "SBJson.h"
 #import "CJSONDeserializer.h"
 #import "NXJsonParser.h"
+#import "JsonLiteAccumulator.h"
 
 @implementation MCTestViewController
 
@@ -478,6 +479,25 @@
      return [NSNumber numberWithFloat:elapsedTime];;
 }
 
+- (NSNumber *)parseWithJsonLite:(NSString *)content {
+    NSDate *startTime = [NSDate date];
+    NSData *utf8Data = [content dataUsingEncoding:NSUTF8StringEncoding];
+    id result = [JsonLiteAccumulator objectFromData:utf8Data
+                                       withMaxDepth:32];
+    float elapsedTime = [startTime timeIntervalSinceNow] * -1000;
+    if (result == nil)
+        elapsedTime = -1.0;
+    return [NSNumber numberWithFloat:elapsedTime];
+}
 
+- (NSNumber *)parseWithJsonLiteData:(NSData *)content {
+    NSDate *startTime = [NSDate date];
+    id result = [JsonLiteAccumulator objectFromData:content
+                                       withMaxDepth:32];
+    float elapsedTime = [startTime timeIntervalSinceNow] * -1000;
+    if (result == nil)
+        elapsedTime = -1.0;
+    return [NSNumber numberWithFloat:elapsedTime];
+}
 
 @end
