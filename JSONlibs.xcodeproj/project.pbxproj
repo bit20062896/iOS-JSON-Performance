@@ -31,7 +31,7 @@
 		5B5284D3148E530D00685137 /* NXDebug.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284A0148E530D00685137 /* NXDebug.m */; };
 		5B5284D4148E530D00685137 /* NXJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284A2148E530D00685137 /* NXJsonParser.m */; };
 		5B5284D5148E530D00685137 /* NXJsonSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284A4148E530D00685137 /* NXJsonSerializer.m */; };
-		5B5284D8148E530D00685137 /* NSObject+SBJson.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284AD148E530D00685137 /* NSObject+SBJson.m */; };
+		5B5284D8148E530D00685137 /* NSObject+SBJson.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284AD148E530D00685137 /* NSObject+SBJson.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		5B5284D9148E530D00685137 /* SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284B0148E530D00685137 /* SBJsonParser.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
 		5B5284DA148E530D00685137 /* SBJsonStreamParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284B2148E530D00685137 /* SBJsonStreamParser.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
 		5B5284DB148E530D00685137 /* SBJsonStreamParserAccumulator.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284B4148E530D00685137 /* SBJsonStreamParserAccumulator.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
