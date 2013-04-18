@@ -32,17 +32,18 @@
 		5B5284D4148E530D00685137 /* NXJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284A2148E530D00685137 /* NXJsonParser.m */; };
 		5B5284D5148E530D00685137 /* NXJsonSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284A4148E530D00685137 /* NXJsonSerializer.m */; };
 		5B5284D8148E530D00685137 /* NSObject+SBJson.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284AD148E530D00685137 /* NSObject+SBJson.m */; };
-		5B5284D9148E530D00685137 /* SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284B0148E530D00685137 /* SBJsonParser.m */; };
-		5B5284DA148E530D00685137 /* SBJsonStreamParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284B2148E530D00685137 /* SBJsonStreamParser.m */; };
-		5B5284DB148E530D00685137 /* SBJsonStreamParserAccumulator.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284B4148E530D00685137 /* SBJsonStreamParserAccumulator.m */; };
-		5B5284DC148E530D00685137 /* SBJsonStreamParserAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284B6148E530D00685137 /* SBJsonStreamParserAdapter.m */; };
-		5B5284DD148E530D00685137 /* SBJsonStreamParserState.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284B8148E530D00685137 /* SBJsonStreamParserState.m */; };
-		5B5284DE148E530D00685137 /* SBJsonStreamWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284BA148E530D00685137 /* SBJsonStreamWriter.m */; };
-		5B5284DF148E530D00685137 /* SBJsonStreamWriterAccumulator.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284BC148E530D00685137 /* SBJsonStreamWriterAccumulator.m */; };
-		5B5284E0148E530D00685137 /* SBJsonStreamWriterState.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284BE148E530D00685137 /* SBJsonStreamWriterState.m */; };
-		5B5284E1148E530D00685137 /* SBJsonTokeniser.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284C0148E530D00685137 /* SBJsonTokeniser.m */; };
-		5B5284E2148E530D00685137 /* SBJsonUTF8Stream.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284C2148E530D00685137 /* SBJsonUTF8Stream.m */; };
-		5B5284E3148E530D00685137 /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284C4148E530D00685137 /* SBJsonWriter.m */; };
+		5B5284D9148E530D00685137 /* SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284B0148E530D00685137 /* SBJsonParser.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
+		5B5284DA148E530D00685137 /* SBJsonStreamParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284B2148E530D00685137 /* SBJsonStreamParser.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
+		5B5284DB148E530D00685137 /* SBJsonStreamParserAccumulator.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284B4148E530D00685137 /* SBJsonStreamParserAccumulator.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
+		5B5284DC148E530D00685137 /* SBJsonStreamParserAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284B6148E530D00685137 /* SBJsonStreamParserAdapter.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
+		5B5284DD148E530D00685137 /* SBJsonStreamParserState.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284B8148E530D00685137 /* SBJsonStreamParserState.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
+		5B5284DE148E530D00685137 /* SBJsonStreamWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284BA148E530D00685137 /* SBJsonStreamWriter.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
+		5B5284DF148E530D00685137 /* SBJsonStreamWriterAccumulator.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284BC148E530D00685137 /* SBJsonStreamWriterAccumulator.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
+		5B5284E0148E530D00685137 /* SBJsonStreamWriterState.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284BE148E530D00685137 /* SBJsonStreamWriterState.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
+		5B5284E1148E530D00685137 /* SBJsonTokeniser.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284C0148E530D00685137 /* SBJsonTokeniser.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
+		5B5284E2148E530D00685137 /* SBJsonUTF8Stream.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284C2148E530D00685137 /* SBJsonUTF8Stream.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
+		5B5284E3148E530D00685137 /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B5284C4148E530D00685137 /* SBJsonWriter.m */; settings = {COMPILER_FLAGS = "-fobjc-arc "; }; };
+		5B832AC2171FCE8600E89317 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5B832AC1171FCE8600E89317 /* Default-568h@2x.png */; };
 		5BA8E38F149167D40063738F /* htdocs in Resources */ = {isa = PBXBuildFile; fileRef = 5BA8E38E149167D40063738F /* htdocs */; };
 		5BA8E510148E54EE00808B76 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 5BA8E50F148E54EE00808B76 /* Icon.png */; };
 		5BA8E513148E54F100808B76 /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5BA8E512148E54F100808B76 /* Icon@2x.png */; };
@@ -125,6 +126,7 @@
 		5B5284C2148E530D00685137 /* SBJsonUTF8Stream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonUTF8Stream.m; sourceTree = "<group>"; };
 		5B5284C3148E530D00685137 /* SBJsonWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonWriter.h; sourceTree = "<group>"; };
 		5B5284C4148E530D00685137 /* SBJsonWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonWriter.m; sourceTree = "<group>"; };
+		5B832AC1171FCE8600E89317 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../Default-568h@2x.png"; sourceTree = "<group>"; };
 		5BA8E38E149167D40063738F /* htdocs */ = {isa = PBXFileReference; lastKnownFileType = folder; path = htdocs; sourceTree = "<group>"; };
 		5BA8E50F148E54EE00808B76 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Icon.png; path = ../Icon.png; sourceTree = "<group>"; };
 		5BA8E512148E54F100808B76 /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Icon@2x.png"; path = "../Icon@2x.png"; sourceTree = "<group>"; };
@@ -202,6 +204,7 @@
 				5BA8E38E149167D40063738F /* htdocs */,
 				5BA8E512148E54F100808B76 /* Icon@2x.png */,
 				5BA8E50F148E54EE00808B76 /* Icon.png */,
+				5B832AC1171FCE8600E89317 /* Default-568h@2x.png */,
 				5BA8E518148E583500808B76 /* twitter_timeline.json */,
 				5B52847C148E530700685137 /* random.json */,
 				5BA8E52D148ED03B00808B76 /* repeat.json */,
@@ -402,6 +405,7 @@
 				5BA8E522148E62DB00808B76 /* MCTestViewController.xib in Resources */,
 				5BA8E52E148ED03B00808B76 /* repeat.json in Resources */,
 				5BA8E38F149167D40063738F /* htdocs in Resources */,
+				5B832AC2171FCE8600E89317 /* Default-568h@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
