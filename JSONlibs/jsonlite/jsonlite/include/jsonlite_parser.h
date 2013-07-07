@@ -1,5 +1,5 @@
 //
-//  Copyright 2012, Andrii Mamchur
+//  Copyright 2012-2013, Andrii Mamchur
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ extern "C" {
      */
     typedef struct {
         /** @brief Called when parser finished tokenization.
-         * You can retreive result of parsing using jsonlite_parser_get_result.
+         * You can retrieve result of parsing using jsonlite_parser_get_result.
          */
         jsonlite_state_callback parse_finished;
         
@@ -132,7 +132,7 @@ extern "C" {
      * @param parser the callbacks object.
      * @return jsonlite_result_invalid_argument when parser or cbs are NULL; otherwise jsonlite_result_ok.
      */
-    jsonlite_result jsonlite_parser_set_callback(jsonlite_parser parser, jsonlite_parser_callbacks *cbs);
+    jsonlite_result jsonlite_parser_set_callback(jsonlite_parser parser, const jsonlite_parser_callbacks *cbs);
     
     /** \brief Returns result of last operation.
      * @see jsonlite_parser
@@ -152,7 +152,7 @@ extern "C" {
      * @param size the JSON payload buffer size.
      * @return JSON parsing result or jsonlite_result_invalid_argument when some parameter is invalid.
      * 
-     * There is an exemple of JSON validation
+     * There is an example of JSON validation
      * @code{.c}
      * char json[] = "{\"key\" : 12345, \"obj\": {}, \"array\":[null, true, false, \"string\"]}";
      * jsonlite_parser p = jsonlite_parser_init(16);
@@ -161,7 +161,7 @@ extern "C" {
      * jsonlite_parser_release(p);
      * @endcode
      *
-     * There is an another exemple of JSON chunk parsing.
+     * There is an another example of JSON chunk parsing.
      * @code{.c}
      * char chunk1[] = "{\"key\" : 12345, \"obj\": {}, \"arr";
      * char chunk2[] = "ay\":[null, true, false, \"string\"]}";

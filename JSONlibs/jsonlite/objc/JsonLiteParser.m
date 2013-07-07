@@ -1,4 +1,4 @@
-//  Copyright 2012, Andrii Mamchur
+//  Copyright 2012-2013, Andrii Mamchur
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -67,12 +67,12 @@ static Class class_JsonLiteNumberToken;
 
 @implementation JsonLiteToken 
 
-- (id)allocValue {
+- (id)copyValue {
     return nil;
 }
 
 - (id)value {
-    return [[self allocValue] autorelease];
+    return [[self copyValue] autorelease];
 }
 
 - (oneway void)release {    
@@ -99,7 +99,7 @@ static Class class_JsonLiteNumberToken;
 
 @implementation JsonLiteStringToken 
 
-- (id)allocEscapedString:(jsonlite_token *)ts {
+- (NSString *)allocEscapedString:(jsonlite_token *)ts {
     void *buffer = NULL;
     size_t size = jsonlite_token_decode_to_uft16(ts, (uint16_t **)&buffer);
     NSString *str = (NSString *)CFStringCreateWithBytesNoCopy(NULL, 
@@ -111,12 +111,12 @@ static Class class_JsonLiteNumberToken;
     return str;
 }
 
-- (id)allocValue {
+- (id)copyValue {
     jsonlite_token *token = (jsonlite_token *)self;
     switch (token->string_type) {
         case jsonlite_string_ascii: {
             NSString *str = (NSString *)CFStringCreateWithBytes(NULL,
-                                                                (const UInt8 *)token->start,
+                                                                token->start,
                                                                 token->end - token->start,
                                                                 kCFStringEncodingUTF8,
                                                                 NO);
@@ -125,15 +125,14 @@ static Class class_JsonLiteNumberToken;
         default:
             return [self allocEscapedString:token];
     }
-    return nil;
 }
 
-- (NSString *)allocNoCopyValue {
+- (NSString *)copyStringWithBytesNoCopy {
     jsonlite_token *token = (jsonlite_token *)self;
     switch (token->string_type) {
         case jsonlite_string_ascii: {
             NSString *str = (NSString *)CFStringCreateWithBytesNoCopy(NULL,
-                                                                (const UInt8 *)token->start,
+                                                                token->start,
                                                                 token->end - token->start,
                                                                 kCFStringEncodingUTF8,
                                                                 NO,
@@ -143,14 +142,13 @@ static Class class_JsonLiteNumberToken;
         default:
             return [self allocEscapedString:token];
     }
-    return nil;
 }
 
 @end
 
 @implementation JsonLiteNumberToken 
 
-- (id)allocValue {
+- (id)copyValue {
     jsonlite_token *token = (jsonlite_token *)self;
     NSNumber *number = nil;
     char *end = NULL;
@@ -164,10 +162,10 @@ static Class class_JsonLiteNumberToken;
     return number;
 }
 
-- (NSDecimalNumber *)allocDecimal {
+- (NSDecimalNumber *)copyDecimal {
     jsonlite_token *token = (jsonlite_token *)self;
     NSString *str = (NSString *)CFStringCreateWithBytes(NULL,
-                                                        (const UInt8 *)token->start,
+                                                        token->start,
                                                         token->end - token->start,
                                                         kCFStringEncodingUTF8,
                                                         NO);
@@ -177,7 +175,7 @@ static Class class_JsonLiteNumberToken;
 }
 
 - (NSDecimalNumber *)decimal {
-    return [[self allocDecimal] autorelease];
+    return [[self copyDecimal] autorelease];
 }
 
 @end
@@ -206,7 +204,7 @@ static Class class_JsonLiteNumberToken;
 - (id)initWithDepth:(NSUInteger)aDepth {
     self = [super init];
     if (self != nil) {        
-        depth = aDepth;
+        depth = aDepth == 0 ? 16 : aDepth;
         internal.parser = NULL;
     }
     return self;
@@ -225,6 +223,7 @@ static Class class_JsonLiteNumberToken;
 }
 
 - (void)dealloc {
+    self.parseError = nil;
     jsonlite_parser_release(internal.parser);
     [super dealloc];
 }
@@ -236,7 +235,6 @@ static Class class_JsonLiteNumberToken;
     }
     
     jsonlite_parser jp = internal.parser;
-    jsonlite_result result = jsonlite_result_ok;
     if (jp == NULL) {
         jp = jsonlite_parser_init(depth);
         internal.parser = jp;
@@ -246,27 +244,32 @@ static Class class_JsonLiteNumberToken;
             jsonlite_parser_set_callback(jp, &cbs);
         }
     }
-    
-    result = jsonlite_parser_tokenize(jp, [data bytes], [data length]);
+
+    jsonlite_result result = jsonlite_parser_tokenize(jp, [data bytes], [data length]);
 
     self.parseError = [JsonLiteParser errorForCode:(JsonLiteCode)result];
     return result == jsonlite_result_ok;
 }
 
-- (void)suspend {
-    if (internal.parser != NULL) {
-        jsonlite_parser_suspend(internal.parser);
+- (NSError *)suspend {
+    if (internal.parser == NULL) {
+        return [JsonLiteParser errorForCode:JsonLiteCodeNotAllowed];
     }
+
+    
+    jsonlite_result result = jsonlite_parser_suspend(internal.parser);
+    self.parseError = [JsonLiteParser errorForCode:(JsonLiteCode)result];
+    return parseError;
 }
 
-- (BOOL)resume {
+- (NSError *)resume {
     if (internal.parser == NULL) {
-        return NO;
+        return [JsonLiteParser errorForCode:JsonLiteCodeNotAllowed];
     }
     
     jsonlite_result result = jsonlite_parser_resume(internal.parser);
     self.parseError = [JsonLiteParser errorForCode:(JsonLiteCode)result];
-    return result == jsonlite_result_ok;
+    return parseError;
 }
 
 - (void)reset {
@@ -334,9 +337,6 @@ static Class class_JsonLiteNumberToken;
         case JsonLiteCodeInvalidEscape:
             str = @"Invalid escape character.";
             break;
-        case JsonLiteCodeNotSupportedControlChar:
-            str = @"Invalid UFT8 character.";
-            break;
         case JsonLiteCodeInvalidNumber:
             str = @"Invalid number format.";
             break;
@@ -345,12 +345,6 @@ static Class class_JsonLiteNumberToken;
             break;
         case JsonLiteCodeInvalidUTF8:
             str = @"Invalid UTF 8";
-            break;
-        case JsonLiteCodeNotSupportedOctal:
-            str = @"Octal numbers aren't supported by JSON.";
-            break;
-        case JsonLiteCodeNotSupportedHex:
-            str = @"HEX numbers aren't supported by JSON.";
             break;
         case JsonLiteCodeNotAllowed:
             str = @"Operation not allowed";

@@ -1,4 +1,4 @@
-//  Copyright 2012, Andrii Mamchur
+//  Copyright 2012-2013, Andrii Mamchur
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ struct JsonLiteAccumulatorState;
 
 @interface JsonLiteAccumulator : NSObject<JsonLiteParserDelegate>
 
-@property (nonatomic, readonly) NSUInteger maxDepth;
+@property (nonatomic, readonly) NSUInteger depth;
 @property (nonatomic, readonly) NSUInteger currentDepth;
 @property (nonatomic, assign) id<JsonLiteAccumulatorDelegate> delegate;
 

@@ -1,4 +1,4 @@
-//  Copyright 2012, Andrii Mamchur
+//  Copyright 2012-2013, Andrii Mamchur
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -73,8 +73,8 @@ static JsonLiteArrayBinder *arrayBinder = nil;
     NSMutableArray *bindingStack;
     NSMutableArray *metaDataStack;
     struct {
-        unsigned int didDeserializeObject : 1;
-        unsigned int didDeserializeArray : 1;
+        BOOL didDeserializeObject : 1;
+        BOOL didDeserializeArray : 1;
     } flags;
 }
 
@@ -264,7 +264,7 @@ static JsonLiteArrayBinder *arrayBinder = nil;
 - (void)parser:(JsonLiteParser *)parser foundKeyToken:(JsonLiteStringToken *)token {
     jsonlite_token_bucket *item = jsonlite_token_pool_get_bucket(keyPool, (jsonlite_token *)token);
     if (item->value == nil) {
-        item->value = [token allocValue];
+        item->value = [token copyValue];
     }
 
     JsonLiteMetaDataState *ms = [metaDataStack lastObject];

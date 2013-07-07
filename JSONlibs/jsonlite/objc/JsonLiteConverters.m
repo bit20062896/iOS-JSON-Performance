@@ -1,4 +1,4 @@
-//  Copyright 2012, Andrii Mamchur
+//  Copyright 2012-2013, Andrii Mamchur
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -12,12 +12,8 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License
 
-#import <Foundation/Foundation.h>
-#import <stdio.h>
 #import "JsonLiteConverters.h"
-#import "JsonLiteDeserializer.h"
 #import "JsonLiteSerializer.h"
-#import "jsonlite_token.h"
 
 @implementation JsonLiteConverter
 
@@ -151,7 +147,7 @@
     deserializer:(JsonLiteDeserializer *)deserializer {
     if ([cls isSubclassOfClass:[NSDate class]] && [token isKindOfClass:[JsonLiteStringToken class]]) {
         JsonLiteStringToken *t = (JsonLiteStringToken *)token;
-        NSString *str = [t allocNoCopyValue];
+        NSString *str = [t copyStringWithBytesNoCopy];
         NSRange range = NSMakeRange(0, [str length]);
         [formatter getObjectValue:value 
                                    forString:str 

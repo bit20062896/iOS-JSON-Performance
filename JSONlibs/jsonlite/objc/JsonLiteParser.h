@@ -1,4 +1,4 @@
-//  Copyright 2012, Andrii Mamchur
+//  Copyright 2012-2013, Andrii Mamchur
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -30,9 +30,6 @@ typedef enum {
     JsonLiteCodeInvalidNumber,
     JsonLiteCodeInvalidToken,
     JsonLiteCodeInvalidUTF8,
-    JsonLiteCodeNotSupportedOctal,
-    JsonLiteCodeNotSupportedHex,
-    JsonLiteCodeNotSupportedControlChar,
     JsonLiteCodeSuspended,    
     JsonLiteCodeNotAllowed
 }  JsonLiteCode;
@@ -43,20 +40,20 @@ extern NSString * const JsonLiteCodeDomain;
 
 @interface JsonLiteToken : NSObject
 
-- (id)allocValue;
+- (id)copyValue;
 - (id)value;
 
 @end
 
 @interface JsonLiteStringToken : JsonLiteToken
 
-- (NSString *)allocNoCopyValue;
+- (NSString *)copyStringWithBytesNoCopy;
 
 @end
 
 @interface JsonLiteNumberToken : JsonLiteToken
 
-- (NSDecimalNumber *)allocDecimal;
+- (NSDecimalNumber *)copyDecimal;
 - (NSDecimalNumber *)decimal;
 
 @end
@@ -88,8 +85,8 @@ extern NSString * const JsonLiteCodeDomain;
 
 - (BOOL)parse:(NSData *)data;
 
-- (void)suspend;
-- (BOOL)resume;
+- (NSError *)suspend;
+- (NSError *)resume;
 - (void)reset;
 
 - (id)init;

@@ -1,4 +1,4 @@
-//  Copyright 2012, Andrii Mamchur
+//  Copyright 2012-2013, Andrii Mamchur
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
 
 #import "JsonLiteMetaData.h"
 #import <objc/runtime.h>
-#import <objc/message.h>
+#import <objc/objc-sync.h>
 
 @implementation JsonLiteBindRule
 
@@ -71,14 +71,14 @@
 }
 
 - (void)setValue:(id)value forObject:(id)obj {
-#ifdef DEBUG
-    if (propertyFlags.objectType) {
-        NSParameterAssert(value == nil || [value isKindOfClass:objectClass]);
-    }
-    if (propertyFlags.classObject) {
-        NSParameterAssert(value == nil || class_getName(value) != NULL);
-    }
-#endif
+//#ifdef DEBUG
+//    if (propertyFlags.objectType) {
+//        NSParameterAssert(value == nil || [value isKindOfClass:objectClass]);
+//    }
+//    if (propertyFlags.classObject) {
+//        NSParameterAssert(value == nil || class_getName(value) != NULL);
+//    }
+//#endif
     setterImp(obj, setterSelector, value);
 }
 
@@ -91,11 +91,9 @@
     const char *end = NULL;
     int run = 1;
     while (*p && run) {
-        switch (*p) {
-            case ',':
-                end = p;
-                run = 0;
-                break;
+        if (*p ==  ',') {
+            end = p;
+            run = 0;
         }
         p++;
     }
@@ -114,21 +112,10 @@
 
 - (const char *)takeMutator:(const char *)p ofClass:(Class)cls {
     const char *start = p;
-    const char *end = NULL;
-    int run = 1;
-    while (*p && run) {
-        switch (*p) {
-            case ',':
-                end = p;
-                run = 0;
-                break;
-        }
-        p++;
-    }
+    for (; *p !=  ','; p++);
     
-    end = end ? end : p;
     NSString *str = [[NSString alloc] initWithBytes:start
-                                             length:end - start
+                                             length:p - start
                                            encoding:NSUTF8StringEncoding];
     
     setterSelector = NSSelectorFromString(str);
@@ -146,38 +133,27 @@
 - (const char *)takePropertyType:(const char *)p {
     const char *start = NULL;
     const char *end = NULL;
-    int run = 1;
-    while (*p && run) {
-        switch (*p) {
-            case '@':
-                propertyFlags.objectType = 1;
+    for (;; p++) {
+        if (*p == '@') {
+            propertyFlags.objectType = 1;
+        } else if (*p == '#') {
+            propertyFlags.classObject = 1;
+            return p + 1;
+        } else if (*p == '\"') {
+            if (start == NULL) {
+                start = p + 1;
+            } else {
+                end = p;
                 break;
-            case '#':
-                propertyFlags.classObject = 1;
-                break;
-            case '\"':
-                if (start == NULL) {
-                    start = p + 1;
-                } else {
-                    end = p;
-                    run = 0;
-                }
-                break;
-            case ',':
-                run = 0;
-                break;
+            }
         }
-        p++;
     }
     
-    if (start && end) {
-        NSString *str = [[NSString alloc] initWithBytes:start
-                                                 length:end - start
-                                               encoding:NSUTF8StringEncoding];
-        
-        objectClass = NSClassFromString(str);
-        [str release];
-    }    
+    NSString *str = [[NSString alloc] initWithBytes:start
+                                             length:end - start
+                                           encoding:NSUTF8StringEncoding];    
+    objectClass = NSClassFromString(str);
+    [str release];
     return p;
 }
 
@@ -207,7 +183,7 @@
 //                break;
 //            case 'P':
 //                propertyFlags.garbageCollection = 1;
-                break;
+//                break;
             case 'T':
                 p = [self takePropertyType:p];
                 break;
@@ -232,8 +208,8 @@
         getterImp = class_getMethodImplementation(cls, getterSelector);
     }
     if (setterImp == NULL && !propertyFlags.readonlyAccess) {
-        NSMutableString *str = [NSString stringWithFormat:@"set%@%@:", 
-                                [[name substringToIndex:1] uppercaseString], 
+        NSString *str = [NSString stringWithFormat:@"set%@%@:",
+                                [[name substringToIndex:1] uppercaseString],
                                 [name substringFromIndex:1]];
         setterSelector = NSSelectorFromString(str);
         setterImp = class_getMethodImplementation(cls, setterSelector);
@@ -262,11 +238,15 @@
 
 @end
 
+@interface JsonLiteClassMetaData() {
+    NSDictionary *binding;
+    NSArray *keys;
+}
+@end
+
 @implementation JsonLiteClassMetaData
 
 @synthesize properties;
-@synthesize binding;
-@synthesize keys;
 @synthesize objectClass;
 
 - (NSDictionary *)binding {
@@ -340,7 +320,9 @@
 - (void)collectKeys {
     NSMutableArray *array = [[NSMutableArray alloc] initWithArray:[binding allKeys]];
     NSMutableArray *propertiesKeys = [NSMutableArray arrayWithArray:[properties allKeys]];
-    for (id key in array) {
+    NSInteger count = [array count];
+    for (NSInteger i = 0; i < count; i++) {
+        id key = [array objectAtIndex:i];
         JsonLiteBindRule *rule = [binding objectForKey:key];
         [propertiesKeys removeObject:rule.property];
     }
@@ -383,19 +365,19 @@
         return nil;
     }
     
-    static NSMutableDictionary *dict = nil;
+    static NSMutableDictionary *cache = nil;
     JsonLiteClassMetaData *metaData = nil;
-    @synchronized (self) {
-        if (dict == nil) {
-            dict = [[NSMutableDictionary alloc] init];
+    objc_sync_enter(self);
+        if (cache == nil) {
+            cache = [[NSMutableDictionary alloc] init];
         }
-        metaData = [dict objectForKey:cls];
+        metaData = [cache objectForKey:cls];
         if (metaData == nil) {
             metaData = [[JsonLiteClassMetaData alloc] initWithClass:cls];
-            [dict setObject:metaData forKey:(id<NSCopying>)cls];
+            [cache setObject:metaData forKey:(id<NSCopying>)cls];
             [metaData release];
         }
-    }
+    objc_sync_exit(self);
     return metaData;
 }
 

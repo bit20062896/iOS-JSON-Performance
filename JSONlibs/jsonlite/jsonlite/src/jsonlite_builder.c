@@ -1,5 +1,5 @@
 //
-//  Copyright 2012, Andrii Mamchur
+//  Copyright 2012-2013, Andrii Mamchur
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -483,10 +483,10 @@ static void jsonlite_builder_raw(jsonlite_builder builder, const void *data, siz
     jsonlite_builder_buffer *buffer = builder->buffer;
     size_t write_limit = buffer->limit - buffer->cursor;
     if (write_limit >= length) {
-        memcpy(buffer->cursor, data, length);
+        memcpy(buffer->cursor, data, length); // LCOV_EXCL_LINE
         buffer->cursor += length;
     } else {
-        memcpy(buffer->cursor, data, write_limit);
+        memcpy(buffer->cursor, data, write_limit); // LCOV_EXCL_LINE
         buffer->cursor += write_limit;
         
         jsonlite_builder_push_buffer(builder);
@@ -498,10 +498,10 @@ static void jsonlite_builder_repeat(jsonlite_builder builder, const char ch, siz
     jsonlite_builder_buffer *buffer = builder->buffer;
     size_t write_limit = buffer->limit - buffer->cursor;
     if (write_limit >= count) {
-        memset(buffer->cursor, ch, count);
+        memset(buffer->cursor, ch, count); // LCOV_EXCL_LINE
         buffer->cursor += count;
     } else {
-        memset(buffer->cursor, ch, write_limit);
+        memset(buffer->cursor, ch, write_limit); // LCOV_EXCL_LINE
         buffer->cursor += write_limit;
         
         jsonlite_builder_push_buffer(builder);
@@ -520,7 +520,7 @@ static  void jsonlite_builder_raw_char(jsonlite_builder builder, char data) {
 jsonlite_result jsonlite_builder_raw_key(jsonlite_builder builder, const void *data, size_t length) {
 	jsonlite_write_state *ws;
 
-    if (builder == NULL || data == NULL) {
+    if (builder == NULL || data == NULL || length == 0) {
         return jsonlite_result_invalid_argument;
     }
     
@@ -552,7 +552,7 @@ jsonlite_result jsonlite_builder_raw_key(jsonlite_builder builder, const void *d
 jsonlite_result jsonlite_builder_raw_string(jsonlite_builder builder, const void *data, size_t length) {
     jsonlite_write_state *ws;
     
-    if (builder == NULL) {
+    if (builder == NULL || data == NULL || length == 0) {
         return jsonlite_result_invalid_argument;
     }
     
@@ -572,15 +572,12 @@ jsonlite_result jsonlite_builder_raw_string(jsonlite_builder builder, const void
     }
     
     return jsonlite_result_not_allowed;
-
-    
-    return jsonlite_result_not_allowed;
 }
 
 jsonlite_result jsonlite_builder_raw_value(jsonlite_builder builder, const void *data, size_t length) {
 	jsonlite_write_state *ws;
 
-    if (builder == NULL || data == NULL) {
+    if (builder == NULL || data == NULL || length == 0) {
         return jsonlite_result_invalid_argument;
     }
     
@@ -621,7 +618,7 @@ jsonlite_result jsonlite_builder_data(jsonlite_builder builder, char **data, siz
     buff = *data; 
     for (b = builder->first; b != NULL; b = b->next) {
         size_t s = b->cursor - b->data;
-        memcpy(buff, b->data, s);
+        memcpy(buff, b->data, s); // LCOV_EXCL_LINE
         buff += s;
     }
     return jsonlite_result_ok;

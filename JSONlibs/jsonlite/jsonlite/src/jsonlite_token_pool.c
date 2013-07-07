@@ -1,5 +1,5 @@
 //
-//  Copyright 2012, Andrii Mamchur
+//  Copyright 2012-2013, Andrii Mamchur
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -14,9 +14,11 @@
 //  limitations under the License
 
 #include "../include/jsonlite_token_pool.h"
-#include "../include/jsonlite_hash.h"
 #include <stdlib.h>
 #include <string.h>
+
+#define JSONLITE_TOKEN_POOL_FRONT 0x80
+#define JSONLITE_TOKEN_POOL_FRONT_MASK (JSONLITE_TOKEN_POOL_FRONT - 1)
 
 typedef struct content_pool_size {
     jsonlite_token_bucket *buckets[JSONLITE_TOKEN_POOL_FRONT];
@@ -33,6 +35,7 @@ typedef struct content_pool_size {
 static void jsonlite_extend_capacity(jsonlite_token_pool pool, int index);
 static int jsonlite_bucket_not_copied(jsonlite_token_pool pool, jsonlite_token_bucket *b);
 static int jsonlite_token_compare(const uint8_t *t1, const uint8_t *t2, size_t length);
+static uint32_t jsonlite_hash(const uint8_t *data, size_t len);
 
 jsonlite_token_pool jsonlite_token_pool_create(jsonlite_token_pool_release_value_fn release_fn) {
     jsonlite_token_pool pool = (jsonlite_token_pool)calloc(1, sizeof(jsonlite_token_pool_struct));
@@ -41,9 +44,9 @@ jsonlite_token_pool jsonlite_token_pool_create(jsonlite_token_pool_release_value
 }
 
 void jsonlite_token_pool_copy_tokens(jsonlite_token_pool pool) {
-    size_t size = pool->content_pool_size;
+    size_t length, size = pool->content_pool_size;
     uint8_t *buffer, *p;
-    ptrdiff_t offset = 0, length;
+    ptrdiff_t offset = 0;
     jsonlite_token_bucket *b;
 	int i;
 
@@ -61,7 +64,7 @@ void jsonlite_token_pool_copy_tokens(jsonlite_token_pool pool) {
 	buffer = (uint8_t *)malloc(size);
     if (pool->content_pool != NULL) {
         offset = buffer - pool->content_pool;
-        memcpy(buffer, pool->content_pool, pool->content_pool_size);
+        memcpy(buffer, pool->content_pool, pool->content_pool_size); // LCOV_EXCL_LINE
     }
     p = buffer + pool->content_pool_size;
     
@@ -73,7 +76,7 @@ void jsonlite_token_pool_copy_tokens(jsonlite_token_pool pool) {
         
         if (jsonlite_bucket_not_copied(pool, b)) {
             length = b->end - b->start;
-            memcpy(p, b->start, length);
+            memcpy(p, b->start, length); // LCOV_EXCL_LINE
             b->start = p,
             b->end = p + length,
             p += length;
@@ -105,9 +108,7 @@ void jsonlite_token_pool_release(jsonlite_token_pool pool) {
         if (pool->release_fn != NULL) {
             count = pool->buckets_length[i];            
             for (j = 0; j < count; j++, bucket++) {
-                if (pool->release_fn != NULL) {
-                    pool->release_fn((void *)bucket->value);
-                }            
+                pool->release_fn((void *)bucket->value);           
             }
         }
 
@@ -163,28 +164,7 @@ jsonlite_token_bucket* jsonlite_token_pool_get_bucket(jsonlite_token_pool pool, 
 }
 
 static int jsonlite_token_compare(const uint8_t *t1, const uint8_t *t2, size_t length) {
-    div_t d = div((int)length, sizeof(uint32_t));
-    const uint32_t *a = (const uint32_t *)t1;
-    const uint32_t *b = (const uint32_t *)t2;
-	int i;
-
-    for (i = 0; i < d.quot; i++) {
-        if (*a++ != *b++) {
-            return 0;
-        }
-    }
-    
-    t1 = (const uint8_t *)a;
-    t2 = (const uint8_t *)b;
-    
-    switch (d.rem) {
-        case 3: if (*t1++ != *t2++) return 0;
-        case 2: if (*t1++ != *t2++) return 0;
-        case 1: if (*t1++ != *t2++) return 0;
-            break;
-    }
-    
-    return 1;
+    return memcmp(t1, t2, length) == 0 ? 1 : 0;
 }
 
 static void jsonlite_extend_capacity(jsonlite_token_pool pool, int index) {
@@ -201,7 +181,7 @@ static void jsonlite_extend_capacity(jsonlite_token_pool pool, int index) {
 	extended = (jsonlite_token_bucket *)malloc(2 * size);
     
     if (b != NULL) {
-        memcpy(extended, b, size);
+        memcpy(extended, b, size); // LCOV_EXCL_LINE
         free(b);
     }
     
@@ -213,5 +193,83 @@ static int jsonlite_bucket_not_copied(jsonlite_token_pool pool, jsonlite_token_b
     if (b == NULL) {
         return 0;
     }
-    return b->start < pool->content_pool || b->start >= pool->content_pool + pool->content_pool_size;
+    
+    int res = b->start < pool->content_pool;
+    res |= b->start >= pool->content_pool + pool->content_pool_size;
+    return res;
+}
+
+// Used MurmurHash2 function by Austin Appleby
+// http://code.google.com/p/smhasher/ revision 147
+
+//-----------------------------------------------------------------------------
+// MurmurHash2 was written by Austin Appleby, and is placed in the public
+// domain. The author hereby disclaims copyright to this source code.
+
+// Note - This code makes a few assumptions about how your machine behaves -
+
+// 1. We can read a 4-byte value from any address without crashing
+// 2. sizeof(int) == 4
+
+// And it has a few limitations -
+
+// 1. It will not work incrementally.
+// 2. It will not produce the same results on little-endian and big-endian
+//    machines.
+
+static uint32_t MurmurHash2 ( const void * key, int len, uint32_t seed )
+{
+    // 'm' and 'r' are mixing constants generated offline.
+    // They're not really 'magic', they just happen to work well.
+    
+    const uint32_t m = 0x5bd1e995;
+    const int r = 24;
+    
+    // Initialize the hash to a 'random' value
+    
+    uint32_t h = seed ^ len;
+    
+    // Mix 4 bytes at a time into the hash
+    
+    const unsigned char * data = (const unsigned char *)key;
+    
+    while(len >= 4)
+    {
+        uint32_t k = *(uint32_t*)data;
+        
+        k *= m;
+        k ^= k >> r;
+        k *= m;
+        
+        h *= m;
+        h ^= k;
+        
+        data += 4;
+        len -= 4;
+    }
+    
+    // Handle the last few bytes of the input array
+    
+    switch(len)
+    {
+        case 3: h ^= data[2] << 16;
+        case 2: h ^= data[1] << 8;
+        case 1: h ^= data[0];
+            h *= m;
+    };
+    
+    // Do a few final mixes of the hash to ensure the last few
+    // bytes are well-incorporated.
+    
+    h ^= h >> 13;
+    h *= m;
+    h ^= h >> 15;
+    
+    return h;
+}
+
+//-----------------------------------------------------------------------------
+
+static uint32_t jsonlite_hash(const uint8_t *data, size_t len) {
+    return MurmurHash2(data, (int)len, 0);
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright 2012, Andrii Mamchur
+//  Copyright 2012-2013, Andrii Mamchur
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -111,7 +111,7 @@ extern "C" {
          */
         jsonlite_string_escape = 0x04,
         
-        /** @brief Indicates that string token hass one or more unicode escaped character(s).
+        /** @brief Indicates that string token has one or more unicode escaped character(s).
          *
          * This flag will be set if string token has \\uXXXX escape - where (XXXX is an unicode character code)
          */
@@ -151,35 +151,35 @@ extern "C" {
     } jsonlite_token;
 
     
-    /** @brief Returns a size of memory that is required for token convertion to UTF-8 string.
+    /** @brief Returns a size of memory that is required for token conversion to UTF-8 string.
      * @param ts jsonlite token
-     * @return 0 if ts is NULL; otherwise required size of for token convertion.
+     * @return 0 if ts is NULL; otherwise required size of for token conversion.
      */
     size_t jsonlite_token_decode_size_for_uft8(jsonlite_token *ts);
     
     /** @brief Converts specified token to UTF-8 string.
      *
-     * Funtion converts specified token to UTF-8 string encoding and copy zero terminated string to buffer.
+     * Function converts specified token to UTF-8 string encoding and copy zero terminated string to buffer.
      * @note
      * Function will alloc memory by itself if *buffer == NULL.
-     * In this case you are responsible for memory releasing by using free() funtion.
+     * In this case you are responsible for memory releasing by using free() function.
      * @param ts jsonlite token
      * @return length in bytes  of converted string.
      */
     size_t jsonlite_token_decode_to_uft8(jsonlite_token *ts, uint8_t **buffer);
     
-    /** @brief Returns a size of memory that is required for token convertion to UTF-16 string.
+    /** @brief Returns a size of memory that is required for token conversion to UTF-16 string.
      * @param ts jsonlite token
-     * @return 0  if ts is NULL; otherwise required size of for token convertion.
+     * @return 0  if ts is NULL; otherwise required size of for token conversion.
      */
     size_t jsonlite_token_decode_size_for_uft16(jsonlite_token *ts);
     
     /** @brief Converts specified token to UTF-16 string.
      *
-     * Funtion converts specified token to UTF-16 string encoding and copy zero terminated string to buffer.
+     * Function converts specified token to UTF-16 string encoding and copy zero terminated string to buffer.
      * @note
      * Function will alloc memory by itself if *buffer == NULL.
-     * In this case you are responsible for memory releasing by using free() funtion.
+     * In this case you are responsible for memory releasing by using free() function.
      * @param ts jsonlite token
      * @return length in bytes of converted string.
      */
@@ -189,7 +189,7 @@ extern "C" {
      *
      * @param c a ASCII character.
      * @return integer value of hex character, 
-     * if character belong to set [0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F,a,b,c,d,e,f]; otherwise 0xFF.
+     * if character belongs to set [0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F,a,b,c,d,e,f]; otherwise 0xFF.
      */
     uint8_t jsonlite_hex_char_to_uint8(uint8_t c);
     
